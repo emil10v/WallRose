@@ -46,4 +46,13 @@ public class Cliente {
 	   int numero = orden.getNumero();
 	   ordenes.remove(numero);
    }
+   public Double getMontoPendiente() {
+	   Double monto = 0.0;
+		for (OrdenCompra orden : ordenes.values()) {
+			if (orden.getEstado() == "Pendiente") {
+				monto += orden.getMontoTotal();
+			}
+		}
+		return monto;
+   }
  }

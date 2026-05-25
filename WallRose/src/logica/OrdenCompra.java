@@ -64,9 +64,9 @@ public class OrdenCompra {
     }
     public void actualizarLinea(int numeroLinea, Producto prod, double cantidad) throws Exception {
 	if (numeroLinea < 0 || numeroLinea >= lineas.size()) 
-		throw new Exception("Numero de Linea invalida.");
+		throw new Exception("Numero de linea invalido.");
 	Linea l = lineas.get(numeroLinea);
 	l.setProducto(prod);
 	l.setCantidad(cantidad);
-}
+    }
 }

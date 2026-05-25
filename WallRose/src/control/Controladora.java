@@ -104,6 +104,11 @@ public class Controladora {
     
     public void borrarCliente(String id) throws Exception {
         revisarClienteExiste(id);
+        Cliente c = clientes.get(id);
+        Map<Integer, OrdenCompra> ordenesCliente = c.getOrdenesCompra();
+		for (Integer numeroOrden : ordenesCliente.keySet()) {
+			ordenesCompra.remove(numeroOrden);
+		}
         clientes.remove(id);
     }
     
