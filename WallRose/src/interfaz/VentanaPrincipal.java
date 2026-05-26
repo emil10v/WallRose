@@ -133,8 +133,40 @@ public class VentanaPrincipal {
 	}
 	
 	private void agregarProducto() {
-		
+		VentanaProducto v = new VentanaProducto(null);
+		v.setModal(true);
+		v.setVisible(true);
+		cargarProductos();
 	}
+	
+	private void editarProducto() {
+		int fila = tableProductos.getSelectedRow();
+		if (fila == -1) {
+			JOptionPane.showMessageDialog(
+					frame,
+					"Debe seleccionar un producto.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+		} else {
+			try {
+				DefaultTableModel model = (DefaultTableModel)tableProductos.getModel();
+				int codigo = (int) model.getValueAt(fila, 0);
+				Controladora control = Controladora.getInstance();
+				Producto p = control.getProducto(codigo);
+				VentanaProducto v = new VentanaProducto(p);
+				v.setModal(true);
+				v.setVisible(true);
+				cargarProductos();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(
+						frame,
+						e.getMessage(),
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+	
 	
 	public static void main(String[] args) {
 
@@ -279,6 +311,12 @@ public class VentanaPrincipal {
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
 		});
 		tableProductos.getColumnModel().getColumn(0).setResizable(false);
 		tableProductos.getColumnModel().getColumn(0).setPreferredWidth(116);
@@ -303,6 +341,11 @@ public class VentanaPrincipal {
 		panelProductos.add(btnAgregarProducto);
 		
 		JButton btnEditar_1 = new JButton("EDITAR");
+		btnEditar_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editarProducto();
+			}
+		});
 		btnEditar_1.setBounds(395, 135, 99, 38);
 		panelProductos.add(btnEditar_1);
 		
