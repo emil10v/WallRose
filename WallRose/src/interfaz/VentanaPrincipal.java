@@ -2,6 +2,7 @@ package interfaz;
 
 import control.Controladora;
 import logica.Cliente;
+import logica.OrdenCompra;
 import logica.Producto;
 
 import java.awt.EventQueue;
@@ -22,6 +23,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
 
 public class VentanaPrincipal {
 
@@ -30,6 +32,9 @@ public class VentanaPrincipal {
 	private JTable tableProductos;
 	private JButton btnAgregarProducto;
 	private JScrollPane scrollPane_1;
+	private JTable tableOrdenesCompra;
+	private JPanel panelOrdenesCompra;
+	private JLabel labelTotalPendiente;
 
 	/**
 	 * Launch the application.
@@ -105,7 +110,7 @@ public class VentanaPrincipal {
 			String idCliente = (String) model.getValueAt(numeroFila, 0);
 			String nombreCliente = (String) model.getValueAt(numeroFila, 1);
 			int res = JOptionPane.showConfirmDialog(frame,
-					"Se eliminará la información del cliente " + nombreCliente + "y todas sus ordenes asociadas.",
+					"Se eliminará la información del cliente " + nombreCliente + " y todas sus ordenes asociadas.",
 					"Confirmar", JOptionPane.YES_NO_OPTION);
 			if (res == JOptionPane.YES_OPTION) {
 				Controladora control = Controladora.getInstance();
@@ -167,6 +172,48 @@ public class VentanaPrincipal {
 		}
 	}
 	
+	private void borrarProducto() {
+		int numeroFila = tableProductos.getSelectedRow();
+		if (numeroFila == -1) {
+			JOptionPane.showMessageDialog(frame, "Debe seleccionar un producto.", "Error", JOptionPane.ERROR_MESSAGE);
+		} else {
+			DefaultTableModel model = (DefaultTableModel) tableProductos.getModel();
+			int codProducto = (int)model.getValueAt(numeroFila, 0);
+			String nombreProducto = (String) model.getValueAt(numeroFila, 1);
+			int res = JOptionPane.showConfirmDialog(frame,
+					"Se eliminará el producto: " + nombreProducto,
+					"Confirmar", JOptionPane.YES_NO_OPTION);
+			if (res == JOptionPane.YES_OPTION) {
+				Controladora control = Controladora.getInstance();
+				try {
+					control.borrarProducto(codProducto);
+					cargarProductos();
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(frame, "Error al borrar producto: " + e.toString(), "Error",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
+	}
+	
+	// OrdenesCompra
+	
+	private void cargarOrdenesCompra() {
+		Controladora control = Controladora.getInstance();
+		DefaultTableModel model = (DefaultTableModel) tableOrdenesCompra.getModel();
+		model.setRowCount(0);
+		List<OrdenCompra> listaOrdenes = control.getOrdenesCompra();
+		for (OrdenCompra orden : listaOrdenes) {
+			Object[] fila = new Object[] {orden.getNumero(), orden.getFecha(), orden.getEstado()
+			};
+			model.addRow(fila);
+		}
+		labelTotalPendiente.setText("" + control.getMontoTotalPendiente());
+	}
+	
+	private void agregarOrdenCompra() {
+		
+	}
 	
 	public static void main(String[] args) {
 
@@ -337,7 +384,7 @@ public class VentanaPrincipal {
 				agregarProducto();
 			}
 		});
-		btnAgregarProducto.setBounds(395, 83, 99, 38);
+		btnAgregarProducto.setBounds(383, 0, 121, 105);
 		panelProductos.add(btnAgregarProducto);
 		
 		JButton btnEditar_1 = new JButton("EDITAR");
@@ -346,14 +393,83 @@ public class VentanaPrincipal {
 				editarProducto();
 			}
 		});
-		btnEditar_1.setBounds(395, 135, 99, 38);
+		btnEditar_1.setBounds(383, 99, 121, 105);
 		panelProductos.add(btnEditar_1);
 		
 		JButton btnBorrar_1 = new JButton("BORRAR");
-		btnBorrar_1.setBounds(395, 184, 99, 38);
+		btnBorrar_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				borrarProducto();
+			}
+		});
+		btnBorrar_1.setBounds(383, 204, 121, 97);
 		panelProductos.add(btnBorrar_1);
-
-		JPanel panelOrdenesCompra = new JPanel();
-		tabbedPane.addTab("Ordenes de Compra", null, panelOrdenesCompra, null);
+		
+		panelOrdenesCompra = new JPanel();
+		panelOrdenesCompra.setLayout(null);
+		tabbedPane.addTab("Órdenes", null, panelOrdenesCompra, null);
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		scrollPane_2.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				cargarOrdenesCompra();
+			}
+		});
+		scrollPane_2.setBounds(0, 0, 363, 235);
+		panelOrdenesCompra.add(scrollPane_2);
+		
+		tableOrdenesCompra = new JTable();
+		tableOrdenesCompra.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"N\u00DAMERO", "FECHA", "ESTADO"
+			}
+		) {
+			Class[] columnTypes = new Class[] {
+					Integer.class, String.class, String.class
+				};
+				public Class getColumnClass(int columnIndex) {
+					return columnTypes[columnIndex];
+				}
+				boolean[] columnEditables = new boolean[] {
+					false, false, false
+				};
+				public boolean isCellEditable(int row, int column) {
+					return columnEditables[column];
+				}
+		});
+		tableOrdenesCompra.getColumnModel().getColumn(0).setResizable(false);
+		tableOrdenesCompra.getColumnModel().getColumn(0).setPreferredWidth(235);
+		tableOrdenesCompra.getColumnModel().getColumn(1).setResizable(false);
+		tableOrdenesCompra.getColumnModel().getColumn(1).setPreferredWidth(235);
+		tableOrdenesCompra.getColumnModel().getColumn(2).setPreferredWidth(235);
+		scrollPane_2.setViewportView(tableOrdenesCompra);
+		
+		JButton btnNueva = new JButton("NUEVA");
+		btnNueva.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				agregarOrdenCompra();
+			}
+		});
+		btnNueva.setBounds(361, 0, 143, 80);
+		panelOrdenesCompra.add(btnNueva);
+		
+		JButton btnDetalle = new JButton("DETALLE");
+		btnDetalle.setBounds(361, 78, 143, 80);
+		panelOrdenesCompra.add(btnDetalle);
+		
+		JButton btnBorrar_2 = new JButton("BORRAR");
+		btnBorrar_2.setBounds(361, 156, 143, 80);
+		panelOrdenesCompra.add(btnBorrar_2);
+		
+		JLabel lblTotalPendiente = new JLabel("Total pendiente: ");
+		lblTotalPendiente.setBounds(10, 246, 101, 27);
+		panelOrdenesCompra.add(lblTotalPendiente);
+		
+		labelTotalPendiente = new JLabel("0.0");
+		labelTotalPendiente.setBounds(108, 247, 128, 24);
+		panelOrdenesCompra.add(labelTotalPendiente);
 	}
 }

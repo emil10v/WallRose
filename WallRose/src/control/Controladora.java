@@ -141,6 +141,17 @@ public class Controladora {
     
     public void borrarProducto(int codigo) throws Exception {
         revisarProductoExiste(codigo);
+        for (OrdenCompra orden : ordenesCompra.values()) {
+            for (Linea linea : orden.getLineas()) {
+            	Producto p = linea.getProducto();
+                if (p.getCodigo() == codigo) {
+                    throw new Exception(
+                        "El producto está siendo utilizado en una orden de compra."
+                    );
+                }
+            }
+        }
+
         productos.remove(codigo);
     }
     
