@@ -224,7 +224,7 @@ public class VentanaPrincipal {
 		if (fila == -1) {
 			JOptionPane.showMessageDialog(
 					frame,
-					"Debe seleccionar un producto.",
+					"Debe seleccionar una Orden.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
 		} else {

@@ -138,9 +138,9 @@ public class DetalleOrdenCompra extends JFrame {
 			labelFecha.setBounds(394, 13, 105, 14);
 			getContentPane().add(labelFecha);
 			
-			labelidEstado = new JLabel(orden.getEstado());
+			lblEstado = new JLabel(orden.getEstado());
 			labelidEstado.setBounds(245, 40, 115, 14);
-			getContentPane().add(labelidEstado);
+			getContentPane().add(lblEstado);
 			
 			JLabel lblNumeroOrden = new JLabel("N\u00FAmero orden:");
 			lblNumeroOrden.setBounds(10, 40, 98, 19);
