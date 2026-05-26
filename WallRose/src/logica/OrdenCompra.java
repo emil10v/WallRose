@@ -1,6 +1,7 @@
 package logica;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -24,8 +25,10 @@ public class OrdenCompra {
         return numero;
     }
 
-    public LocalDateTime getFecha() {
-        return fecha;
+    public String getFecha() {
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    	return fecha.format(formatter);
+
     }
 
     public String getEstado() {

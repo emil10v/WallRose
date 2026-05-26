@@ -212,7 +212,10 @@ public class VentanaPrincipal {
 	}
 	
 	private void agregarOrdenCompra() {
-		
+		VentanaNuevaOrden v = new VentanaNuevaOrden();
+		v.setModal(true);
+		v.setVisible(true);
+		cargarOrdenesCompra();
 	}
 	
 	public static void main(String[] args) {
