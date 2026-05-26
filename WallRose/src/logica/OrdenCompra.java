@@ -62,9 +62,18 @@ public class OrdenCompra {
         for (Linea l : lineas) {
             total += l.getCosto();
         }
-        total += total * impuestoVenta;
         return total;
     }
+    
+    public Double getImpuesto() {
+    		return impuestoVenta;
+    }
+    
+    public Double getMontoTotalIVAI() {
+    		Double total = getMontoTotal();
+    		return total += total * impuestoVenta;
+    }
+    
     public void actualizarLinea(int numeroLinea, Producto prod, double cantidad) throws Exception {
 	if (numeroLinea < 0 || numeroLinea >= lineas.size()) 
 		throw new Exception("Numero de linea invalido.");

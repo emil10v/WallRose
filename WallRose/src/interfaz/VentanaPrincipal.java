@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JScrollBar;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -216,6 +217,33 @@ public class VentanaPrincipal {
 		v.setModal(true);
 		v.setVisible(true);
 		cargarOrdenesCompra();
+	}
+	
+	private void detalleOrden() {
+		int fila = tableOrdenesCompra.getSelectedRow();
+		if (fila == -1) {
+			JOptionPane.showMessageDialog(
+					frame,
+					"Debe seleccionar un producto.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+		} else {
+			try {
+				DefaultTableModel model = (DefaultTableModel)tableOrdenesCompra.getModel();
+				int numOrden = (int) model.getValueAt(fila, 0);
+				Controladora control = Controladora.getInstance();
+				OrdenCompra orden = control.getOrdenCompra(numOrden);
+				DetalleOrdenCompra d = new DetalleOrdenCompra(orden);
+				d.setVisible(true);
+				cargarProductos();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(
+						frame,
+						e.getMessage(),
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -460,6 +488,11 @@ public class VentanaPrincipal {
 		panelOrdenesCompra.add(btnNueva);
 		
 		JButton btnDetalle = new JButton("DETALLE");
+		btnDetalle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				detalleOrden();
+			}
+		});
 		btnDetalle.setBounds(361, 78, 143, 80);
 		panelOrdenesCompra.add(btnDetalle);
 		

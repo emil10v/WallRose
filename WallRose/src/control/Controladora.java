@@ -203,6 +203,8 @@ public class Controladora {
 	revisarProductoExiste(codigoProducto);
 	OrdenCompra orden = ordenesCompra.get(numeroOrden);
 	Producto prod = productos.get(codigoProducto);
+	if (prod.getExistencias() < cantidad)
+		throw new Exception("Cantidad excede existencias del producto");
 	Linea nuevaLinea = new Linea(prod, cantidad);
 	orden.agregarLinea(nuevaLinea);
 	}
