@@ -8,11 +8,14 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+import control.Controladora;
 import logica.Cliente;
 import logica.Linea;
 import logica.OrdenCompra;
+import logica.Producto;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
@@ -28,22 +31,24 @@ public class DetalleOrdenCompra extends JFrame {
 	private JLabel labelImpuesto;
 	private JLabel labelTotal;
 	private JLabel labelFecha;
-	private JLabel labelidEstado;
 	private JLabel labelNumeroOrden;
 	private JButton btnTerminar;
 	private JButton btnPendiente;
 	private JTable tableLineas;
 	private JButton btnEditar;
-	private JButton btnAgregar_1;
 	private OrdenCompra orden;
 	private Cliente cliente;
+	private JLabel labelEstado;
+	private JButton btnBorrar;
+	private JFrame frame;
 	
 	
 	private void cargarLineas() {
 		DefaultTableModel model = (DefaultTableModel) tableLineas.getModel();
 		model.setRowCount(0);
 		for (Linea l : orden.getLineas()) {
-			Object[] fila = new Object[] {l.getProducto().getCodigo(), l.getProducto().getNombre(), l.getCantidad(), l.getCosto()
+			Producto p = l.getProducto();
+			Object[] fila = new Object[] {p.getCodigo(), p.getNombre(), l.getCantidad() + " " + p.getUnidad(), l.getCosto()
 			};
 			model.addRow(fila);
 		};
@@ -61,6 +66,62 @@ public class DetalleOrdenCompra extends JFrame {
 			cargarLineas();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	private void editarLinea(int numOrden) {
+		int fila = tableLineas.getSelectedRow();
+		if (fila == -1) {
+			JOptionPane.showMessageDialog(
+					frame,
+					"Debe seleccionar una Linea.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+		} else {
+			try {
+				VentanaLineaOrden dialog = new VentanaLineaOrden(numOrden);
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+				labelCosto.setText("" + orden.getMontoTotal());
+				labelImpuesto.setText("" + orden.getImpuesto());
+				labelTotal.setText("" + orden.getMontoTotalIVAI());
+				cargarLineas();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void borrarLinea(int numOrden) {
+		int fila = tableLineas.getSelectedRow();
+		if (fila == -1) {
+			JOptionPane.showMessageDialog(
+					this,
+					"Debe seleccionar una línea.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+		} else {
+			try {
+				int res = JOptionPane.showConfirmDialog(
+						this,
+						"¿Desea borrar la línea seleccionada?",
+						"Confirmar",
+						JOptionPane.YES_NO_OPTION);
+				if (res == JOptionPane.YES_OPTION) {
+					int numeroLinea = fila;
+					Controladora control = Controladora.getInstance();
+					control.borrarLineaOrdenCompra(numOrden, numeroLinea);
+					cargarLineas();
+					labelCosto.setText("" + orden.getMontoTotal());
+					labelImpuesto.setText("" + orden.getImpuesto());
+					labelTotal.setText("" + orden.getMontoTotalIVAI());
+				}
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(
+						this,
+						e.getMessage(),
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
 		}
 	}
 	
@@ -93,7 +154,7 @@ public class DetalleOrdenCompra extends JFrame {
 				return columnTypes[columnIndex];
 			}
 			boolean[] columnEditables = new boolean[] {
-				true, false, false, true
+				false, false, false, false
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
@@ -138,10 +199,6 @@ public class DetalleOrdenCompra extends JFrame {
 			labelFecha.setBounds(394, 13, 105, 14);
 			getContentPane().add(labelFecha);
 			
-			lblEstado = new JLabel(orden.getEstado());
-			labelidEstado.setBounds(245, 40, 115, 14);
-			getContentPane().add(lblEstado);
-			
 			JLabel lblNumeroOrden = new JLabel("N\u00FAmero orden:");
 			lblNumeroOrden.setBounds(10, 40, 98, 19);
 			getContentPane().add(lblNumeroOrden);
@@ -185,16 +242,24 @@ public class DetalleOrdenCompra extends JFrame {
 			getContentPane().add(btnAgregar);
 			
 			btnEditar = new JButton("EDITAR");
+			btnEditar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					editarLinea(orden.getNumero());
+					cargarLineas();
+				}
+			});
 			btnEditar.setBounds(412, 101, 115, 22);
 			getContentPane().add(btnEditar);
 			
-			btnAgregar_1 = new JButton("AGREGAR");
-			btnAgregar_1.addActionListener(new ActionListener() {
+			btnBorrar = new JButton("BORRAR");
+			btnBorrar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					borrarLinea();
+					cargarLineas();
 				}
 			});
-			btnAgregar_1.setBounds(412, 134, 115, 22);
-			getContentPane().add(btnAgregar_1);
+			btnBorrar.setBounds(412, 134, 115, 22);
+			getContentPane().add(btnBorrar);
 			
 			btnPendiente = new JButton("PENDIENTE");
 			btnPendiente.addActionListener(new ActionListener() {
@@ -211,6 +276,10 @@ public class DetalleOrdenCompra extends JFrame {
 			});
 			btnTerminar.setBounds(142, 184, 128, 34);
 			getContentPane().add(btnTerminar);
+			
+			labelEstado = new JLabel(orden.getEstado());
+			labelEstado.setBounds(249, 40, 115, 14);
+			getContentPane().add(labelEstado);
 		
 			cargarLineas();
 	}

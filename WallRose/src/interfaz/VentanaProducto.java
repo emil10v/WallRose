@@ -81,7 +81,7 @@ public class VentanaProducto extends JDialog {
 		contentPanel.add(labelCodigo);
 		
 		JLabel lblCodigo = new JLabel("    (Se asigna autom\u00E1ticamente)");
-		lblCodigo.setBounds(114, 11, 245, 17);
+		lblCodigo.setBounds(114, 11, 181, 17);
 		contentPanel.add(lblCodigo);
 
 		labelNombre = new JLabel("Nombre: ");

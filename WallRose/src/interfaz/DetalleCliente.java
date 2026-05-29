@@ -153,8 +153,17 @@ public class DetalleCliente extends JDialog {
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
+			boolean[] columnEditables = new boolean[] {
+				false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
 		});
+		tableOrdenes.getColumnModel().getColumn(0).setResizable(false);
+		tableOrdenes.getColumnModel().getColumn(1).setResizable(false);
 		tableOrdenes.getColumnModel().getColumn(1).setPreferredWidth(94);
+		tableOrdenes.getColumnModel().getColumn(2).setResizable(false);
 		tableOrdenes.getColumnModel().getColumn(2).setPreferredWidth(91);
 		scrollPane.setViewportView(tableOrdenes);
 		

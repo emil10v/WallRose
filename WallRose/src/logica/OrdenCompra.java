@@ -19,6 +19,7 @@ public class OrdenCompra {
         this.fecha = LocalDateTime.now();
         this.estado = "Iniciada";
         this.lineas = new ArrayList<Linea>();
+        cliente.agregarOrdenCompra(this);
     }
 
     public int getNumero() {
